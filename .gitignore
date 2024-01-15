@@ -1,0 +1,7 @@
+node_modules
+*.tgz
+.vscode
+/**/.vscode
+bundle.harmony.js
+*.code-workspace
+.DS_Store
