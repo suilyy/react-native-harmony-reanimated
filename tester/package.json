@@ -15,7 +15,7 @@
   "dependencies": {
     "react": "18.2.0",
     "react-native": "0.72.5",
-    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.13",
+    "react-native-harmony": "npm:@rnoh/react-native-harmony@^0.72.14",
     "react-native-harmony-reanimated": "file:../react-native-harmony-reanimated/rnoh-react-native-harmony-reanimated-3.6.0.tgz",
     "react-native-reanimated": "3.6.0"
   },
