@@ -1,14 +1,16 @@
 {
   "include": [
-    "src/*"
+    "src"
   ],
   "compilerOptions": {
-    "baseUrl": "./src/",
+    "baseUrl": ".",
     "jsx": "react-native",
     "module": "esnext",
     "moduleResolution": "node",
+    "target": "es2017",
     "lib": [
-      "es2017"
+      "es2017",
+      "dom"
     ],
     "declaration": true,
     "declarationMap": true,

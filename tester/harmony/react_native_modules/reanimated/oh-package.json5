@@ -1,10 +1,10 @@
 {
-  "name": "reanimated",
+  "name": "rnoh-reanimated",
   "version": "1.0.0",
   "description": "Please describe the basic information.",
   "main": "",
   "author": "",
   "license": "",
-  "dependencies": {}
+  "dependencies": {rnoh: 'file:../rnoh'}
 }
 
