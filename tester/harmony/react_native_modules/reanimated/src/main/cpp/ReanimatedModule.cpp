@@ -4,6 +4,7 @@
 #include "PlatformDepMethodsHolder.h"
 #include "WorkletRuntimeCollector.h"
 #include "RNRuntimeDecorator.h"
+#include "TransformParser.h"
 
 using namespace facebook;
 using namespace reanimated;
@@ -35,14 +36,26 @@ namespace rnoh {
             nodesManager.postOnAnimation(callback);
         };
         auto synchronouslyUpdateUIPropsFunction = [this](jsi::Runtime &rt, Tag tag, const jsi::Object &props) {
-            jsi::Value jsiValueArray[] = {jsi::Value(rt, props)};
-            auto intermediaryObject =
-                ArkTSTurboModule::convertJSIValuesToIntermediaryValues(rt, this->jsInvoker_, jsiValueArray, 1);
+            auto dynamic = jsi::dynamicFromValue(rt, jsi::Value(rt, props));
+            auto dynamicProps = dynamic.items();
+            bool shouldEraseTransform = false;
+            for (auto &prop : dynamicProps) {
+                if (prop.first.getString() == "transform") {
+                    if (prop.second.isArray()) {
+                        prop.second = parseTransform(prop.second);
+                    } else {
+                        shouldEraseTransform = true;
+                    }
+                }
+            }
+            if (shouldEraseTransform) {
+                dynamic.erase("transform");
+            }
             ArkJS arkJs(m_ctx.env);
-            auto napiArgs = arkJs.convertIntermediaryValuesToNapiValues(intermediaryObject);
+            auto napiArgs = arkJs.convertIntermediaryValueToNapiValue(dynamic);
             auto napiTag = arkJs.createInt(tag);
             auto napiTurboModuleObject = arkJs.getObject(m_ctx.arkTsTurboModuleInstanceRef);
-            napiTurboModuleObject.call("setViewProps", {napiTag, napiArgs[0]});
+            napiTurboModuleObject.call("setViewProps", {napiTag, napiArgs});
         };
         auto progressLayoutAnimation = [=](jsi::Runtime &rt, int tag, const jsi::Object &newStyle,
                                            bool isSharedTransition) {
