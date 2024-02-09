@@ -1,7 +1,7 @@
 #include <folly/dynamic.h>
 #include <react/renderer/graphics/Transform.h>
-
-#define PI 3.14159265358979323846
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 namespace rnoh {
     facebook::react::Transform applyTransformOperation(facebook::react::Transform const &transform, std::string const &property, double value) {
@@ -42,7 +42,7 @@ namespace rnoh {
         if (unit == "rad") {
             return value;
         } else if (unit == "deg") {
-            return (value * PI) / 180;
+            return (value * M_PI) / 180;
         }
 
         throw std::invalid_argument("Angle must be a value in radians or degrees");
@@ -81,8 +81,6 @@ namespace rnoh {
             }
         }
         auto const &matrix = resultTransform.matrix;
-        return folly::dynamic::array(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5], matrix[6],
-                                     matrix[7], matrix[8], matrix[9], matrix[10], matrix[11], matrix[12], matrix[13],
-                                     matrix[14], matrix[15]);
+        return folly::dynamic::array(matrix.begin(), matrix.end());
     }
 }
