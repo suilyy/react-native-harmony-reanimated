@@ -14,21 +14,22 @@ import { RNGestureHandlerButton, RNGestureHandlerRootView } from 'rnoh-gesture-h
 
 
 @Builder
-export function CustomComponentBuilder(ctx: ComponentBuilderContext) {
+export function buildCustomRNComponent(ctx: ComponentBuilderContext) {
   if (ctx.componentName === RNGestureHandlerRootView.NAME) {
     RNGestureHandlerRootView({
       tag: ctx.tag,
-      ctx: ctx.rnohContext,
-      buildCustomComponent: CustomComponentBuilder
+      ctx: ctx.rnComponentContext,
+      buildCustomComponent: buildCustomRNComponent
     })
-  } else if (ctx.descriptor.type === RNGestureHandlerButton.DESCRIPTOR_TYPE) {
+  } else if (ctx.componentName === RNGestureHandlerButton.NAME) {
     RNGestureHandlerButton({
-      tag: ctx.descriptor.tag,
-      ctx: ctx.rnohContext,
-      buildCustomComponent: CustomComponentBuilder
+      tag: ctx.tag,
+      ctx: ctx.rnComponentContext,
+      buildCustomComponent: buildCustomRNComponent
     })
   }
 }
+const wrappedCustomRNComponentBuilder = wrapBuilder(buildCustomRNComponent)
 
 /**
  * If you want to use custom fonts, you need to register them here.
@@ -74,13 +75,13 @@ struct Index {
     Column() {
       if (this.rnAbility && this.shouldShow) {
         if (this.rnAbility.isDebugModeEnabled()) {
-          RNOHErrorDialog()
+          RNOHErrorDialog({ctx: this.rnAbility.rnohCoreContext})
         }
         RNApp({
           rnInstanceConfig: { createRNPackages },
           initialProps: { "foo": "bar" } as Record<string, string>,
           appKey: "tester",
-          buildCustomComponent: CustomComponentBuilder,
+          wrappedCustomRNComponentBuilder: wrappedCustomRNComponentBuilder,
           onSetUp: (rnInstance) => {
             rnInstance.enableFeatureFlag("ENABLE_RN_INSTANCE_CLEAN_UP")
           },
