@@ -3,12 +3,15 @@ cmake_minimum_required(VERSION 3.4.1)
 set(OH_MODULES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../oh_modules")
 set(RNOH_APP_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(NODE_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../node_modules")
-set(RNOH_CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../node_modules/react-native-harmony/harmony/cpp")
+set(RNOH_CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../oh_modules/@rnoh/react-native-openharmony/src/main/cpp")
+set(RNOHGH_CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../oh_modules/@rnoh/react-native-gesture-handler/src/main/cpp")
+set(WITH_HITRACE_SYSTRACE 1)
+add_compile_definitions(WITH_HITRACE_SYSTRACE)
 
 file(GLOB GENERATED_CPP_FILES "./generated/*.cpp")
 add_subdirectory("${RNOH_CPP_DIR}" ./rn)
-add_subdirectory("${OH_MODULES_DIR}/rnoh-reanimated/src/main/cpp" ./reanimated)
-add_subdirectory("${OH_MODULES_DIR}/rnoh-gesture-handler/src/main/cpp" ./gesture_handler)
+add_subdirectory("${OH_MODULES_DIR}/@rnoh/react-native-openharmony-reanimated/src/main/cpp" ./reanimated)
+add_subdirectory("${RNOHGH_CPP_DIR}" ./gesture_handler)
 
 
 add_library(rnoh_app SHARED

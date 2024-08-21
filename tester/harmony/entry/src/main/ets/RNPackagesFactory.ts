@@ -1,6 +1,6 @@
-import type {RNPackageContext, RNPackage} from 'rnoh/ts';
-import {ReanimatedPackage} from 'rnoh-reanimated/ts';
-import {GestureHandlerPackage } from "rnoh-gesture-handler/ts";
+import type {RNPackageContext, RNPackage} from '@rnoh/react-native-openharmony/ts';
+import {ReanimatedPackage} from '@rnoh/react-native-openharmony-reanimated/ts';
+import {GestureHandlerPackage } from "@rnoh/react-native-gesture-handler/ts";
 
 
 export function createRNPackages(ctx: RNPackageContext): RNPackage[] {

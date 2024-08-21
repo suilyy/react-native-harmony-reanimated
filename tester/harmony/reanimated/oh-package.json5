@@ -1,0 +1,11 @@
+{
+  name: '@rnoh/react-native-openharmony-reanimated',
+  version: '3.6.1',
+  description: "",
+  type: 'module',
+  main: 'index.ets',
+  author: '',
+  license: '',
+  dependencies: {
+  },
+}

@@ -1,4 +1,5 @@
 #include "RNOH/ArkTSTurboModule.h"
+#include "RNOH/RNInstance.h"
 #include "ReanimatedModule.h"
 #include "ReanimatedUIScheduler.h"
 #include "PlatformDepMethodsHolder.h"
@@ -37,25 +38,10 @@ namespace rnoh {
         };
         auto synchronouslyUpdateUIPropsFunction = [this](jsi::Runtime &rt, Tag tag, const jsi::Object &props) {
             auto dynamic = jsi::dynamicFromValue(rt, jsi::Value(rt, props));
-            auto dynamicProps = dynamic.items();
-            bool shouldEraseTransform = false;
-            for (auto &prop : dynamicProps) {
-                if (prop.first.getString() == "transform") {
-                    if (prop.second.isArray()) {
-                        prop.second = parseTransform(prop.second);
-                    } else {
-                        shouldEraseTransform = true;
-                    }
-                }
+            auto instance = m_ctx.instance.lock();
+            if (instance != nullptr) {
+              instance->synchronouslyUpdateViewOnUIThread(tag, dynamic);
             }
-            if (shouldEraseTransform) {
-                dynamic.erase("transform");
-            }
-            ArkJS arkJs(m_ctx.env);
-            auto napiArgs = arkJs.convertIntermediaryValueToNapiValue(dynamic);
-            auto napiTag = arkJs.createInt(tag);
-            auto napiTurboModuleObject = arkJs.getObject(m_ctx.arkTsTurboModuleInstanceRef);
-            napiTurboModuleObject.call("setViewProps", {napiTag, napiArgs});
         };
         auto progressLayoutAnimation = [=](jsi::Runtime &rt, int tag, const jsi::Object &newStyle,
                                            bool isSharedTransition) {
@@ -88,8 +74,12 @@ namespace rnoh {
         auto unsubscribeFromKeyboardEventsFunction = [](int listenerId) {
             // TODO
         };
-        auto setGestureStateFunction = [](int handlerTag, int newState) {
-            // TODO
+        auto setGestureStateFunction = [this](int handlerTag, int newState) {
+            ArkJS arkJs(m_ctx.env);
+            auto napiTag = arkJs.createInt(handlerTag);
+            auto napiState = arkJs.createInt(newState);
+            auto napiTurboModuleObject = arkJs.getObject(m_ctx.arkTSTurboModuleInstanceRef);
+            napiTurboModuleObject.call("setGestureHandlerState", {napiTag, napiState});
         };
 
         PlatformDepMethodsHolder platformDepMethodsHolder = {
