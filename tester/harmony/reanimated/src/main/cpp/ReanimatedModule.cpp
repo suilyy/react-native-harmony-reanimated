@@ -18,9 +18,7 @@ jsi::Value installTurboModule(facebook::jsi::Runtime &rt, react::TurboModule &tu
 }
 
 ReanimatedModule::ReanimatedModule(const ArkTSTurboModule::Context ctx, const std::string name)
-    : ArkTSTurboModule(ctx, name), nodesManager([this](TaskExecutor::Task &&task) {
-          m_ctx.taskExecutor->runTask(TaskThread::MAIN, std::move(task));
-      }) {
+    : ArkTSTurboModule(ctx, name) {
     methodMap_ = {{"installTurboModule", {0, rnoh::installTurboModule}}};
 }
 
@@ -33,14 +31,19 @@ ReanimatedModule::~ReanimatedModule() {
 void ReanimatedModule::installTurboModule(facebook::jsi::Runtime &rt) {
     auto jsQueue = m_ctx.jsQueue;
     auto jsInvoker = this->jsInvoker_;
+    auto nodesManager = std::make_shared<ReanimatedNodesManager>(
+        [weakExecutor = std::weak_ptr(m_ctx.taskExecutor)](TaskExecutor::Task &&task) {
+            if (auto taskExecutor = weakExecutor.lock()) {
+                taskExecutor->runTask(TaskThread::MAIN, std::move(task));
+            }
+        });
 
     std::shared_ptr<UIScheduler> uiScheduler = std::make_shared<ReanimatedUIScheduler>(m_ctx.taskExecutor);
-    auto maybeFlushUIUpdatesQueueFunction = [this]() { nodesManager.maybeFlushUIUpdatesQueue(); };
-    auto requestRender = [this](std::function<void(double)> onRender, jsi::Runtime &rt) {
-        ReanimatedOnAnimationCallback callback = [onRender = std::move(onRender)](double frameTimestamp) {
-            onRender(frameTimestamp);
-        };
-        nodesManager.postOnAnimation(callback);
+    auto maybeFlushUIUpdatesQueueFunction = [nodesManager]() {
+        nodesManager->maybeFlushUIUpdatesQueue();
+    };
+    auto requestRender = [nodesManager](std::function<void(double)> onRender, jsi::Runtime & /*rt*/) {
+        nodesManager->postOnAnimation(std::move(onRender));
     };
     auto synchronouslyUpdateUIPropsFunction = [this](jsi::Runtime &rt, Tag tag, const jsi::Object &props) {
         auto dynamic = jsi::dynamicFromValue(rt, jsi::Value(rt, props));
@@ -105,12 +108,13 @@ void ReanimatedModule::installTurboModule(facebook::jsi::Runtime &rt) {
         std::make_shared<NativeReanimatedModule>(rt, jsInvoker, jsQueue, uiScheduler, platformDepMethodsHolder);
 
     weakNativeReanimatedModule_ = nativeReanimatedModule;
-    ReanimatedPerformOperations reanimatedPerformOperations = [this]() {
-        if (auto nativeReanimatedModule = weakNativeReanimatedModule_.lock()) {
+    ReanimatedPerformOperations reanimatedPerformOperations = [weakNativeReanimatedModule =
+                                                                   weakNativeReanimatedModule_]() {
+        if (auto nativeReanimatedModule = weakNativeReanimatedModule.lock()) {
             nativeReanimatedModule->performOperations();
         }
     };
-    nodesManager.registerPerformOperations(reanimatedPerformOperations);
+    nodesManager->registerPerformOperations(reanimatedPerformOperations);
 
     WorkletRuntimeCollector::install(rt);
 
@@ -145,7 +149,7 @@ void ReanimatedModule::installTurboModule(facebook::jsi::Runtime &rt) {
         });
     m_ctx.scheduler->addEventListener(eventListener);
 }
-void ReanimatedModule::injectDependencies(facebook::jsi::Runtime &rt) {
+void ReanimatedModule::injectDependencies(facebook::jsi::Runtime & /*rt*/) {
     const auto uiManager = m_ctx.scheduler->getUIManager();
     if (auto nativeReanimatedModule = weakNativeReanimatedModule_.lock()) {
         nativeReanimatedModule->initializeFabric(uiManager);

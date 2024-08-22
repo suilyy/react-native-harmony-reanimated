@@ -15,7 +15,6 @@ public:
 private:
     std::weak_ptr<reanimated::NativeReanimatedModule> weakNativeReanimatedModule_;
     void injectDependencies(facebook::jsi::Runtime &rt);
-    ReanimatedNodesManager nodesManager;
     std::shared_ptr<facebook::react::EventListener> eventListener;
 };
 

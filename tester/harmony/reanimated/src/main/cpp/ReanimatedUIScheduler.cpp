@@ -9,7 +9,11 @@ namespace rnoh {
             return;
         }
 
-        m_taskExecutor->runTask(TaskThread::MAIN, std::move(job));
+        m_taskExecutor->runTask(TaskThread::MAIN, [weakSelf = weak_from_this(), job = std::move(job)]() {
+            if (auto self = weakSelf.lock()) {
+                job();
+            }
+        });
     }
 
 } // namespace rnoh
