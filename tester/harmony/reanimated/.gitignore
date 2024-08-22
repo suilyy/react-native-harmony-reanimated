@@ -4,4 +4,4 @@
 /build
 /.cxx
 /.test
-./BuildProfile.ets
+/BuildProfile.ets

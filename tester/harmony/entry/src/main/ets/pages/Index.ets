@@ -82,11 +82,10 @@ struct Index {
         }
         RNApp({
           rnInstanceConfig: {
-            name: "app_name",
+            name: "tester",
             createRNPackages,
             enableBackgroundExecutor: false,
             enableCAPIArchitecture: true,
-            // arkTsComponentNames: arkTsComponentNames,
           },
           initialProps: { "foo": "bar" } as Record<string, string>,
           appKey: "tester",

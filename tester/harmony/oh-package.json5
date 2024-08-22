@@ -11,5 +11,8 @@
   "dependencies": {
     "@rnoh/react-native-openharmony": "file:../node_modules/react-native-harmony/harmony/react_native_openharmony.har",
     "@rnoh/react-native-gesture-handler": "file:../node_modules/react-native-harmony-gesture-handler/harmony/gesture_handler.har"
+  },
+  "overrides": {
+    "@rnoh/react-native-openharmony" : "file:../node_modules/react-native-harmony/harmony/react_native_openharmony.har"
   }
 }

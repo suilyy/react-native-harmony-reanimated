@@ -5,13 +5,14 @@
  * It looks like this is ArkTS problem and it may be fixed in the future.
  * For the time being, use direct imports.
  */
+import type { WorkerRNInstanceConfig } from '@rnoh/react-native-openharmony/src/main/ets/setupRNOHWorker'
 import { setupRNOHWorker } from "@rnoh/react-native-openharmony/src/main/ets/setupRNOHWorker"
 import { createRNPackages } from "../RNPackagesFactory"
 
 setupRNOHWorker({
-  workerRNInstanceConfigByRNInstanceName: {
-    "app_name": { thirdPartyPackagesFactory: createRNPackages },
-  }
+  createWorkerRNInstanceConfig: (): WorkerRNInstanceConfig => (
+   { thirdPartyPackagesFactory: createRNPackages }
+)
 })
 
 
