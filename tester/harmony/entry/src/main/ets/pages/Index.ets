@@ -1,37 +1,29 @@
 import {
-  RNApp,
-  RNOHErrorDialog,
   AnyJSBundleProvider,
+  ComponentBuilderContext,
+  FileJSBundleProvider,
   MetroJSBundleProvider,
   ResourceJSBundleProvider,
+  RNApp,
+  RNOHErrorDialog,
+  RNOHLogger,
   TraceJSBundleProviderDecorator,
-  RNOHCoreContext,
-  ComponentBuilderContext,
-  RNOHLogger
-} from "@rnoh/react-native-openharmony";
+  RNOHCoreContext
+} from '@rnoh/react-native-openharmony';
 import font from '@ohos.font';
-import { createRNPackages } from '../RNPackagesFactory'
-import { RNGestureHandlerButton, RNGestureHandlerRootView } from '@rnoh/react-native-gesture-handler';
+import { createRNPackages } from '../RNPackagesFactory';
 
-
+const arkTsComponentNames: Array<string> = ["SampleView", "GeneratedSampleView", "PropsDisplayer"];
 @Builder
-function CustomComponentBuilder(ctx: ComponentBuilderContext) {
-  if (ctx.componentName === RNGestureHandlerRootView.NAME) {
-    RNGestureHandlerRootView({
-      tag: ctx.tag,
-      ctx: ctx.rnComponentContext,
-      buildCustomComponent: CustomComponentBuilder
-    })
-  } else if (ctx.componentName === RNGestureHandlerButton.NAME) {
-    RNGestureHandlerButton({
-      tag: ctx.tag,
-      ctx: ctx.rnComponentContext,
-      buildCustomComponent: CustomComponentBuilder
-    })
+export function buildCustomRNComponent(ctx: ComponentBuilderContext) {
+  // There seems to be a problem with the placement of ArkTS components in mixed mode. Nested Stack temporarily avoided.
+  Stack(){
   }
+  .position({x:0, y: 0})
+
 }
 
-const wrappedCustomRNComponentBuilder = wrapBuilder(CustomComponentBuilder)
+const wrappedCustomRNComponentBuilder = wrapBuilder(buildCustomRNComponent)
 
 /**
  * If you want to use custom fonts, you need to register them here.
@@ -51,9 +43,10 @@ const fonts: font.FontOptions[] = [
 @Entry
 @Component
 struct Index {
-  @StorageLink('RNOHCoreContext') rnohCoreContext: RNOHCoreContext | undefined = undefined
+  @StorageLink('RNOHCoreContext') private rnohCoreContext: RNOHCoreContext | undefined = undefined
   @State shouldShow: boolean = false
   private logger!: RNOHLogger
+
 
   aboutToAppear() {
     this.logger = this.rnohCoreContext!.logger.clone("Index")
@@ -82,10 +75,11 @@ struct Index {
         }
         RNApp({
           rnInstanceConfig: {
-            name: "tester",
             createRNPackages,
+            enableNDKTextMeasuring: true,
             enableBackgroundExecutor: false,
             enableCAPIArchitecture: true,
+            arkTsComponentNames: arkTsComponentNames,
           },
           initialProps: { "foo": "bar" } as Record<string, string>,
           appKey: "tester",
@@ -96,9 +90,13 @@ struct Index {
           jsBundleProvider: new TraceJSBundleProviderDecorator(
             new AnyJSBundleProvider([
               new MetroJSBundleProvider(),
+              // NOTE: to load the bundle from file, place it in
+              // `/data/app/el2/100/base/com.rnoh.tester/files/bundle.harmony.js`
+              // on your device. The path mismatch is due to app sandboxing on HarmonyOS
+              new FileJSBundleProvider('/data/storage/el2/base/files/bundle.harmony.js'),
               new ResourceJSBundleProvider(this.rnohCoreContext.uiAbilityContext.resourceManager, 'hermes_bundle.hbc'),
               new ResourceJSBundleProvider(this.rnohCoreContext.uiAbilityContext.resourceManager, 'bundle.harmony.js')
-              ]),
+            ]),
             this.rnohCoreContext.logger),
         })
       }

@@ -13,7 +13,7 @@ export class ReanimatedModule extends TurboModule {
     this.ctx.descriptorRegistry.setAnimatedRawProps(tag, props);
   }
   public setGestureState(handlerTag: Tag, newState: number) {
-    const module = this.ctx.rnInstance.getUITurboModule<RNGestureHandlerModule>(RNGestureHandlerModule.NAME);
+    const module = this.ctx.rnInstance.getTurboModule<RNGestureHandlerModule>(RNGestureHandlerModule.NAME);
     module.setGestureHandlerState(handlerTag, newState);
   }
 }
