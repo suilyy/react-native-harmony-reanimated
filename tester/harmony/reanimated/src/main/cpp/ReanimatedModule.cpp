@@ -10,6 +10,13 @@
 using namespace facebook;
 using namespace reanimated;
 namespace rnoh {
+
+static double getMillisSinceEpoch() {
+    auto now = std::chrono::high_resolution_clock::now();
+    auto frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+    return frameTime.count();
+}
+
 jsi::Value installTurboModule(facebook::jsi::Runtime &rt, react::TurboModule &turboModule,
                               const facebook::jsi::Value *args, size_t count) {
     auto self = static_cast<ReanimatedModule *>(&turboModule);
@@ -23,14 +30,13 @@ ReanimatedModule::ReanimatedModule(const ArkTSTurboModule::Context ctx, const st
 }
 
 ReanimatedModule::~ReanimatedModule() {
+    LOG(INFO) << "ReanimatedModule::~ReanimatedModule";
     if (eventListener) {
         m_ctx.scheduler->removeEventListener(eventListener);
     }
 }
 
 void ReanimatedModule::installTurboModule(facebook::jsi::Runtime &rt) {
-    auto jsQueue = m_ctx.jsQueue;
-    auto jsInvoker = this->jsInvoker_;
     auto nodesManager = std::make_shared<ReanimatedNodesManager>(
         [weakExecutor = std::weak_ptr(m_ctx.taskExecutor)](TaskExecutor::Task &&task) {
             if (auto taskExecutor = weakExecutor.lock()) {
@@ -39,19 +45,31 @@ void ReanimatedModule::installTurboModule(facebook::jsi::Runtime &rt) {
         });
 
     std::shared_ptr<UIScheduler> uiScheduler = std::make_shared<ReanimatedUIScheduler>(m_ctx.taskExecutor);
-    auto maybeFlushUIUpdatesQueueFunction = [nodesManager]() {
-        nodesManager->maybeFlushUIUpdatesQueue();
+    auto maybeFlushUIUpdatesQueueFunction = [nodesManager]() { nodesManager->maybeFlushUIUpdatesQueue(); };
+    auto requestRender = [weakSelf = weak_from_this(), nodesManager](std::function<void(double)> onRender,
+                                                                     jsi::Runtime & /*rt*/) {
+        auto self = weakSelf.lock();
+        if (!self) {
+            return;
+        }
+
+        nodesManager->postOnAnimation(
+            [weakReanimatedModule = self->weakNativeReanimatedModule_, onRender = std::move(onRender)](auto frameTime) {
+                if (auto reanimatedModule = weakReanimatedModule.lock()) {
+                    onRender(frameTime);
+                }
+            });
     };
-    auto requestRender = [nodesManager](std::function<void(double)> onRender, jsi::Runtime & /*rt*/) {
-        nodesManager->postOnAnimation(std::move(onRender));
-    };
-    auto synchronouslyUpdateUIPropsFunction = [this](jsi::Runtime &rt, Tag tag, const jsi::Object &props) {
+
+    auto synchronouslyUpdateUIPropsFunction = [weakInstance = m_ctx.instance](jsi::Runtime &rt, Tag tag,
+                                                                              const jsi::Object &props) {
         auto dynamic = jsi::dynamicFromValue(rt, jsi::Value(rt, props));
-        auto instance = m_ctx.instance.lock();
+        auto instance = weakInstance.lock();
         if (instance != nullptr) {
             instance->synchronouslyUpdateViewOnUIThread(tag, dynamic);
         }
     };
+
     auto progressLayoutAnimation = [=](jsi::Runtime &rt, int tag, const jsi::Object &newStyle,
                                        bool isSharedTransition) {
         // noop
@@ -60,11 +78,8 @@ void ReanimatedModule::installTurboModule(facebook::jsi::Runtime &rt) {
     auto endLayoutAnimation = [=](int tag, bool removeView) {
         // noop
     };
-    auto getAnimationTimestamp = []() {
-        auto now = std::chrono::high_resolution_clock::now();
-        auto frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
-        return frameTime.count();
-    };
+
+    auto getAnimationTimestamp = getMillisSinceEpoch;
 
     auto registerSensorFunction = [](int sensorType, int interval, int iosReferenceFrame,
                                      std::function<void(double[], int)> setter) -> int {
@@ -82,11 +97,15 @@ void ReanimatedModule::installTurboModule(facebook::jsi::Runtime &rt) {
     auto unsubscribeFromKeyboardEventsFunction = [](int listenerId) {
         // TODO
     };
-    auto setGestureStateFunction = [this](int handlerTag, int newState) {
-        ArkJS arkJs(m_ctx.env);
+    auto setGestureStateFunction = [weakSelf = weak_from_this()](int handlerTag, int newState) {
+        auto self = weakSelf.lock();
+        if (!self) {
+            return;
+        }
+        ArkJS arkJs(self->m_ctx.env);
         auto napiTag = arkJs.createInt(handlerTag);
         auto napiState = arkJs.createInt(newState);
-        auto napiTurboModuleObject = arkJs.getObject(m_ctx.arkTSTurboModuleInstanceRef);
+        auto napiTurboModuleObject = arkJs.getObject(self->m_ctx.arkTSTurboModuleInstanceRef);
         napiTurboModuleObject.call("setGestureHandlerState", {napiTag, napiState});
     };
 
@@ -105,7 +124,7 @@ void ReanimatedModule::installTurboModule(facebook::jsi::Runtime &rt) {
     };
 
     auto nativeReanimatedModule =
-        std::make_shared<NativeReanimatedModule>(rt, jsInvoker, jsQueue, uiScheduler, platformDepMethodsHolder);
+        std::make_shared<NativeReanimatedModule>(rt, jsInvoker_, m_ctx.jsQueue, uiScheduler, platformDepMethodsHolder);
 
     weakNativeReanimatedModule_ = nativeReanimatedModule;
     ReanimatedPerformOperations reanimatedPerformOperations = [weakNativeReanimatedModule =
@@ -133,9 +152,7 @@ void ReanimatedModule::installTurboModule(facebook::jsi::Runtime &rt) {
             }
 
             auto eventType = rawEvent.type;
-
-            auto now = std::chrono::high_resolution_clock::now();
-            auto frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+            auto frameTime = getMillisSinceEpoch();
 
             // React Native prefixes event names with "top". If the event name starts with "on", the result is that the
             // event on the native side is prefixed with "topOn", while the JS side expects the event name to be without

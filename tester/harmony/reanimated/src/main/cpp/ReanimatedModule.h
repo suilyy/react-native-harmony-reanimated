@@ -6,7 +6,7 @@
 
 namespace rnoh {
 
-class JSI_EXPORT ReanimatedModule : public ArkTSTurboModule {
+class JSI_EXPORT ReanimatedModule : public std::enable_shared_from_this<ReanimatedModule>, public ArkTSTurboModule {
 public:
     ReanimatedModule(const ArkTSTurboModule::Context ctx, const std::string name);
     ~ReanimatedModule() override;
