@@ -4,7 +4,7 @@ set(OH_MODULES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../oh_modules")
 set(RNOH_APP_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(NODE_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../node_modules")
 set(RNOH_CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../oh_modules/@rnoh/react-native-openharmony/src/main/cpp")
-set(RNOHGH_CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../oh_modules/@rnoh/react-native-gesture-handler/src/main/cpp")
+set(RNOHGH_CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../oh_modules/@react-native-oh-tpl/react-native-gesture-handler/src/main/cpp")
 set(WITH_HITRACE_SYSTRACE 1)
 add_compile_definitions(WITH_HITRACE_SYSTRACE)
 
