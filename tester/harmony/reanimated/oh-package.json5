@@ -1,6 +1,6 @@
 {
-  name: '@rnoh/react-native-openharmony-reanimated',
-  version: '3.6.1',
+  name: '@react-native-oh-tpl/react-native-reanimated',
+  version: '3.6.2-rc.2',
   description: "",
   type: 'module',
   main: 'index.ets',
@@ -8,6 +8,6 @@
   license: '',
   dependencies: {
     "@rnoh/react-native-openharmony": "file:../../node_modules/react-native-harmony/harmony/react_native_openharmony.har",
-    "@rnoh/react-native-gesture-handler": "file:../../node_modules/react-native-harmony-gesture-handler/harmony/gesture_handler.har"
+//    "@react-native-oh-tpl/react-native-gesture-handler": "file:../../node_modules/@react-native-oh-tpl/react-native-gesture-handler/harmony/gesture_handler.har"
   },
 }
