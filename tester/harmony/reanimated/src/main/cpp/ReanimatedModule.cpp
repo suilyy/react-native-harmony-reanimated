@@ -6,6 +6,7 @@
 #include "WorkletRuntimeCollector.h"
 #include "RNRuntimeDecorator.h"
 #include "TransformParser.h"
+#include "RNOH/RNInstanceCAPI.h"
 
 using namespace facebook;
 using namespace reanimated;
@@ -65,9 +66,20 @@ void ReanimatedModule::installTurboModule(facebook::jsi::Runtime &rt) {
                                                                               const jsi::Object &props) {
         auto dynamic = jsi::dynamicFromValue(rt, jsi::Value(rt, props));
         auto instance = weakInstance.lock();
-        if (instance != nullptr) {
-            instance->synchronouslyUpdateViewOnUIThread(tag, dynamic);
+        auto instanceCapi = std::dynamic_pointer_cast<RNInstanceCAPI>(instance);
+        if (!instanceCapi) {
+            return;
         }
+        auto componentInstance = instanceCapi->findComponentInstanceByTag(tag);
+        if (!componentInstance) {
+            return;
+        }
+
+        // We want to restore the ignored props after the update,
+        // because reanimated handles setting correct props on React renders on its own
+        auto ignoredProps = componentInstance->getIgnoredPropKeys();
+        instanceCapi->synchronouslyUpdateViewOnUIThread(tag, dynamic);
+        componentInstance->setIgnoredPropKeys(std::move(ignoredProps));
     };
 
     auto progressLayoutAnimation = [=](jsi::Runtime &rt, int tag, const jsi::Object &newStyle,
