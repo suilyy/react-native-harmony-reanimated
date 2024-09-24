@@ -15,3 +15,5 @@ oh_modules/
 /.clangd
 /.clang-tidy
 /build-profile.json5
+gesture_handler
+react_native_openharmony.har
