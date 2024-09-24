@@ -4,10 +4,10 @@
     "alias": "react-native-reanimated",
     "redirectInternalImports": true
   },
-  "version": "3.6.3-rc.1",
+  "version": "3.6.3",
   "description": "",
   "main": "lib/index.js",
-    "scripts": {
+  "scripts": {
     "build": "tsc",
     "pack:prod": "npm pack",
     "prepack": "npm run build",
