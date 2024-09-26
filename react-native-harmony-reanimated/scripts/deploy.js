@@ -3,7 +3,7 @@ const { execSync } = require('child_process');
 const fs = require('node:fs');
 const readline = require('readline');
 
-const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '';
+const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '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';
 
 if (!RNOH_REPO_TOKEN) {
   console.log('RNOH_REPO_TOKEN not found');
