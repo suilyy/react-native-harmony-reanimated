@@ -3,7 +3,7 @@ const { execSync } = require('child_process');
 const fs = require('node:fs');
 const readline = require('readline');
 
-const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '';
+const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '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';
 
 if (!RNOH_REPO_TOKEN) {
   console.log('RNOH_REPO_TOKEN not found');
@@ -33,7 +33,7 @@ function runDeployment() {
 
   if (!isRepositoryClean()) {
     console.log(
-      'Repository should be clean, on main branch and up to date with upstream.'
+      'Repository should be clean, on sig branch and up to date with upstream.'
     );
     process.exit(1);
   }
@@ -132,10 +132,10 @@ function isRepositoryClean() {
     encoding: 'utf-8',
   }).trim();
   const isUpdated =
-    execSync('git rev-list HEAD...origin/main --count', {
+    execSync('git rev-list HEAD...origin/sig  -- --count', {
       encoding: 'utf-8',
     }).trim() === '0';
-  return !status && branch === 'main' && isUpdated;
+  return !status && branch === 'sig' && isUpdated;
 }
 
 /**
@@ -168,7 +168,7 @@ async function createMergeRequest(sourceBranch, title) {
         },
         body: JSON.stringify({
           source_branch: sourceBranch,
-          target_branch: 'main',
+          target_branch: 'sig',
           title: title,
           squash: false,
           remove_source_branch: true,
