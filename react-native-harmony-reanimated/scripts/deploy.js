@@ -132,9 +132,11 @@ function isRepositoryClean() {
     encoding: 'utf-8',
   }).trim();
   const isUpdated =
-    execSync('git rev-list HEAD...origin/sig  -- --count', {
+    execSync('git rev-list HEAD...origin/sig --count', {
       encoding: 'utf-8',
     }).trim() === '0';
+    console.log(!status , branch === 'sig' , isUpdated,!status && branch === 'sig' && isUpdated
+    );
   return !status && branch === 'sig' && isUpdated;
 }
 
