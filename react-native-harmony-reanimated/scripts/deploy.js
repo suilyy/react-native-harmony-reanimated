@@ -81,43 +81,43 @@ function runDeployment() {
 
           execSync(`npm publish --dry-run`, { stdio: 'inherit' });
 
-          rl.question(
-            'Are changes good to be published and pushed to the upstream? (yes/no): ',
-            async (answer) => {
-              if (answer.toLowerCase() === 'yes') {
-                execSync(`npm publish`, { stdio: 'inherit' });
-                console.log('NPM Package was published successfully.');
-                execSync(
-                  `git checkout -b release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`
-                );
-                execSync('git add -A');
-                execSync(
-                  `git commit -m "release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}"`,
-                  {
-                    stdio: 'inherit',
-                  }
-                );
-                execSync(`git push -u origin HEAD --no-verify`, {
-                  stdio: 'inherit',
-                });
+          // rl.question(
+          //   'Are changes good to be published and pushed to the upstream? (yes/no): ',
+          //   async (answer) => {
+          //     if (answer.toLowerCase() === 'yes') {
+          //       execSync(`npm publish`, { stdio: 'inherit' });
+          //       console.log('NPM Package was published successfully.');
+          //       execSync(
+          //         `git checkout -b release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`
+          //       );
+          //       execSync('git add -A');
+          //       execSync(
+          //         `git commit -m "release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}"`,
+          //         {
+          //           stdio: 'inherit',
+          //         }
+          //       );
+          //       execSync(`git push -u origin HEAD --no-verify`, {
+          //         stdio: 'inherit',
+          //       });
 
-                execSync(`git tag v${version}`);
-                execSync(`git push -u origin v${version} --no-verify`, {
-                  stdio: 'inherit',
-                });
-                const mergeRequestId = await createMergeRequest(
-                  `release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`,
-                  `release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}`
-                );
-                console.log(`Please merge the following Merge Request:\n
-                https://gl.swmansion.com/rnoh/${UNSCOPED_NPM_PACKAGE_NAME}/-/merge_requests/${mergeRequestId}`);
-                rl.close();
-              } else {
-                console.log('Deployment aborted.');
-                rl.close();
-              }
-            }
-          );
+          //       execSync(`git tag v${version}`);
+          //       execSync(`git push -u origin v${version} --no-verify`, {
+          //         stdio: 'inherit',
+          //       });
+          //       const mergeRequestId = await createMergeRequest(
+          //         `release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`,
+          //         `release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}`
+          //       );
+          //       console.log(`Please merge the following Merge Request:\n
+          //       https://gl.swmansion.com/rnoh/${UNSCOPED_NPM_PACKAGE_NAME}/-/merge_requests/${mergeRequestId}`);
+          //       rl.close();
+          //     } else {
+          //       console.log('Deployment aborted.');
+          //       rl.close();
+          //     }
+          //   }
+          // );
         }
       );
     }
