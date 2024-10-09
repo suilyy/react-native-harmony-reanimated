@@ -3,7 +3,7 @@ const { execSync } = require('child_process');
 const fs = require('node:fs');
 const readline = require('readline');
 
-const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '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';
+const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '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';
 
 if (!RNOH_REPO_TOKEN) {
   console.log('RNOH_REPO_TOKEN not found');
@@ -12,8 +12,9 @@ if (!RNOH_REPO_TOKEN) {
 
 const EXPECTED_EXECUTION_DIRECTORY_NAME =
   'react-native-harmony-reanimated';
-const GITLAB_URL = 'https://gl.swmansion.com';
-const GITLAB_PROJECT_ID = 522;
+const GITHUB_URL = 'https://api.github.com';
+// const OWNER = 'react-native-oh-library';
+const OWNER = 'suilyy';
 const MODULE_NAME = 'reanimated';
 const HAR_FILE_OUTPUT_PATH = `tester/harmony/${MODULE_NAME}/build/default/outputs/default/${MODULE_NAME}.har`;
 const UNSCOPED_NPM_PACKAGE_NAME = 'react-native-harmony-reanimated';
@@ -161,19 +162,17 @@ function updateChangelog(version, changelogForCurrentVersion) {
 async function createMergeRequest(sourceBranch, title) {
   try {
     const response = await fetch(
-      `${GITLAB_URL}/api/v4/projects/${GITLAB_PROJECT_ID}/merge_requests`,
+      `${GITHUB_URL}/repos/${OWNER}/${UNSCOPED_NPM_PACKAGE_NAME}/pulls`,
       {
         method: 'POST',
         headers: {
-          'PRIVATE-TOKEN': RNOH_REPO_TOKEN,
+          'Authorization': `token ${RNOH_REPO_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          source_branch: sourceBranch,
-          target_branch: 'sig',
           title: title,
-          squash: false,
-          remove_source_branch: true,
+          'head': `${sourceBranch}`, // fork仓库分支
+          'base': `sig` // 源仓库分支
         }),
       }
     );
