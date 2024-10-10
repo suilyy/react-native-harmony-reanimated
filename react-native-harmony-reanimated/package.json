@@ -24,7 +24,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^20.11.4"
+    "@types/node": "^20.11.4",
+    "react-native-harmony-cli": "file:rnoh-react-native-harmony-cli-0.0.26.tgz"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
