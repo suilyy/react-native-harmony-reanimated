@@ -48,5 +48,9 @@
   },
   "engines": {
     "node": ">=16"
+  },
+  "overrides": {
+    "@rnoh/react-native-harmony-cli": "file:./rnoh_package/react-native-harmony-cli/rnoh-react-native-harmony-cli-0.0.26.tgz",
+    "testerino": "file:./rnoh_package/react-native-harmony-cli/rnoh-testerino-0.0.9.tgz"
   }
 }
