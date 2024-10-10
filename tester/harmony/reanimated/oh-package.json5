@@ -1,13 +1,12 @@
 {
   name: '@react-native-oh-tpl/react-native-reanimated',
-  version: '3.6.3',
-  description: "",
+  version: '3.6.31',
+  description: '',
   type: 'module',
   main: 'index.ets',
   author: '',
   license: '',
   dependencies: {
-    "@rnoh/react-native-openharmony": "file:../../node_modules/react-native-harmony/harmony/react_native_openharmony.har",
-//    "@react-native-oh-tpl/react-native-gesture-handler": "file:../../node_modules/@react-native-oh-tpl/react-native-gesture-handler/harmony/gesture_handler.har"
+    '@rnoh/react-native-openharmony': 'file:../../node_modules/react-native-harmony/harmony/react_native_openharmony.har',
   },
 }
