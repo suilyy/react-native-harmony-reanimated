@@ -182,7 +182,7 @@ async function createMergeRequest(sourceBranch, title) {
       );
     }
     const responseData = await response.json();
-    console.log(JSON.stringify(responseData))
+    // console.log(JSON.stringify(responseData))
     return responseData.html_url;
   } catch (error) {
     console.error('Error creating merge request:', error);
