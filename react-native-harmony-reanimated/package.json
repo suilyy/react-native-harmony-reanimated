@@ -4,7 +4,7 @@
     "alias": "react-native-reanimated",
     "redirectInternalImports": true
   },
-  "version": "",
+  "version": "3.6.38",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
