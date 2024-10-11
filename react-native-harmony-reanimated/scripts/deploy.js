@@ -106,12 +106,11 @@ function runDeployment() {
                 execSync(`git push -u origin v${version} --no-verify`, {
                   stdio: 'inherit',
                 });
-                const mergeRequestId = await createMergeRequest(
+                const merge_Request_html_url = await createMergeRequest(
                   `release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`,
                   `release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}`
                 );
-                console.log(`Please merge the following Merge Request:\n
-                ${GITHUB_URL}/${OWNER}/${UNSCOPED_NPM_PACKAGE_NAME}/-/merge_requests/${mergeRequestId}`);
+                console.log(`Please merge the following Merge Request:\n${merge_Request_html_url}`);
                 rl.close();
               } else {
                 console.log('Deployment aborted.');
@@ -184,7 +183,7 @@ async function createMergeRequest(sourceBranch, title) {
     }
     const responseData = await response.json();
     console.log(JSON.stringify(responseData))
-    return responseData.iid;
+    return responseData.html_url;
   } catch (error) {
     console.error('Error creating merge request:', error);
     throw error;
