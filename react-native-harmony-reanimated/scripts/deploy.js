@@ -111,7 +111,7 @@ function runDeployment() {
                   `release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}`
                 );
                 console.log(`Please merge the following Merge Request:\n
-                https://gl.swmansion.com/rnoh/${UNSCOPED_NPM_PACKAGE_NAME}/-/merge_requests/${mergeRequestId}`);
+                ${GITHUB_URL}/${OWNER}/${UNSCOPED_NPM_PACKAGE_NAME}/-/merge_requests/${mergeRequestId}`);
                 rl.close();
               } else {
                 console.log('Deployment aborted.');
@@ -183,6 +183,7 @@ async function createMergeRequest(sourceBranch, title) {
       );
     }
     const responseData = await response.json();
+    console.log(JSON.stringify(responseData))
     return responseData.iid;
   } catch (error) {
     console.error('Error creating merge request:', error);
