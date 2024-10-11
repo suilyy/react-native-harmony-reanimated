@@ -1,5 +1,5 @@
 {
-  "name": "react-native-reanimated_test",
+  "name": "@suilyy/react-native-reanimated",
   "harmony": {
     "alias": "react-native-reanimated",
     "redirectInternalImports": true

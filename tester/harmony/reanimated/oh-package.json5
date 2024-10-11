@@ -1,5 +1,5 @@
 {
-  name: 'react-native-reanimated_test',
+  name: '@suilyy/react-native-reanimated',
   version: '3.6.40',
   description: '',
   type: 'module',
