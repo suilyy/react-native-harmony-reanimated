@@ -1,6 +1,6 @@
 {
   name: 'react-native-reanimated_test',
-  version: '',
+  version: '3.6.40',
   description: '',
   type: 'module',
   main: 'index.ets',
