@@ -2,6 +2,7 @@
 const { execSync } = require('child_process');
 const fs = require('node:fs');
 const readline = require('readline');
+const fetch = require('node-fetch');
 
 const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '';
 
