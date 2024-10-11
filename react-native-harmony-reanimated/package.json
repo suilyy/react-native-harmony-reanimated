@@ -47,5 +47,9 @@
     "harmony",
     "src",
     "./harmony.tar.gz"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
 }
