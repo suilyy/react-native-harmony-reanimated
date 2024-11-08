@@ -5,12 +5,12 @@ const readline = require('readline');
 const fetch = require('node-fetch');
 const config  = require("./config.js")
 
-const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '';
+// const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '';
 
-if (!RNOH_REPO_TOKEN) {
-  console.log('RNOH_REPO_TOKEN not found');
-  process.exit(1);
-}
+// if (!RNOH_REPO_TOKEN) {
+//   console.log('RNOH_REPO_TOKEN not found');
+//   process.exit(1);
+// }
 
 const EXPECTED_EXECUTION_DIRECTORY_NAME =
   'react-native-harmony-reanimated';
