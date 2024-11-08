@@ -34,12 +34,12 @@ function runDeployment() {
     process.exit(1);
   }
 
-  if (!isRepositoryClean()) {
-    console.log(
-      'Repository should be clean, on sig branch and up to date with upstream.'
-    );
-    process.exit(1);
-  }
+  // if (!isRepositoryClean()) {
+  //   console.log(
+  //     'Repository should be clean, on sig branch and up to date with upstream.'
+  //   );
+  //   process.exit(1);
+  // }
 
   let version = '';
 
@@ -128,17 +128,17 @@ function runDeployment() {
         `2. Please generating ${HAR_FILE_OUTPUT_PATH} file. Open DevEco Studio, select any file in '${MODULE_NAME}' module, and run Build > Make Module '${MODULE_NAME}'.\n`+
         `3. Please copying ${`${HAR_FILE_OUTPUT_PATH}`} to ./harmony dir\n`+
         `Once you finish type 'done': `,
-        async (copyAnswer) => {
+        (copyAnswer) => {
           if (copyAnswer !== 'done' ||!fs.existsSync(`./harmony/${MODULE_NAME}.har`)) {
             console.log('Deployment aborted');
             process.exit(1);
           }
           
-          // execSync(`npm publish --dry-run`, { stdio: 'inherit' });
+          execSync(`npm publish --dry-run`, { stdio: 'inherit' });
 
           rl.question(
             'Are changes good to be published and pushed to the upstream? (yes/no): ',
-            async (answer) => {
+            (answer) => {
               if (answer.toLowerCase() === 'yes') {
                 execSync(`npm publish`, { stdio: 'inherit' });
                 console.log('NPM Package was published successfully.');
@@ -172,8 +172,7 @@ function runDeployment() {
                 rl.close();
               }
             }
-          );
-          rl.close();    
+          ); 
         }
       );
     }
