@@ -4,17 +4,19 @@
     "alias": "react-native-reanimated",
     "redirectInternalImports": true
   },
-  "version": "3.6.41",
+  "version": "3.6.51",
   "description": "",
   "main": "lib/index.js",
+  "commands": {
+    "deploy": "npm run deploy"
+  },
   "scripts": {
     "build": "tsc",
     "pack:prod": "npm pack",
     "prepack": "npm run build",
-    "prepublishOnly": "npm run prepack && react-native verify-package-harmony --package-path . --skip-checks oh_package_name_is_derived_from_npm_package_name",
     "update_version": "node ./scripts/update-version.js",
     "deploy": "node ./scripts/deploy.js",
-    "release": "release-it --ci"
+    "release": "release-it  deploy"
   },
   "peerDependencies": {
     "react": "*",

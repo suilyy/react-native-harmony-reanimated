@@ -1,16 +1,19 @@
 {
-    "git": {
-      "commitMessage": "Release v${version}",
-      "tagName": "v${version}"
-    },
-    "npm": {
-      "publish": false
-    },
-    "github": {
-        "release": true,
-        "GITHUB_TOKEN": "${process.env.RNOH_REPO_TOKEN}",
-        "comments": {
-            "submit": true
-        }
-    }
+  "git": {
+    "requireUpstream": false,
+    "tagName": "v${version}",
+    "commitMessage": "chore(release): ${name}@${version}",
+    "requireCleanWorkingDir": false
+  },
+  "npm": {
+    "publish": false
+  },
+  "github": {
+    "release": true,
+    "tokenRef":"process.env.GITHUB_TOKEN"
+  },
+  "hooks": {
+    "after:bump": "node ./scripts/checkout-branch.js --version ${version}",
+    "after:git:release":"node ./scripts/create-pull-request.js --verbose"
   }
+}
