@@ -45,6 +45,7 @@ const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
       `${process.cwd()}/harmony/${MODULE_NAME}/oh-package.json5`,
       version
     );
+    console.log(`${process.cwd()}/harmony/${MODULE_NAME}/oh-package.json5`);
     
   }
 
