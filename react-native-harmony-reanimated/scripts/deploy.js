@@ -3,6 +3,7 @@ const { execSync } = require('child_process');
 const fs = require('node:fs');
 const readline = require('readline');
 const fetch = require('node-fetch');
+const config  = require("./config.js")
 
 const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '';
 
@@ -54,32 +55,85 @@ function runDeployment() {
         stdio: 'inherit',
       });
 
+      // rl.question(
+      //   `Please generate ${HAR_FILE_OUTPUT_PATH} file. Open DevEco Studio, select any file in '${MODULE_NAME}' module, and run Build > Make Module '${MODULE_NAME}'.\nOnce you finish type 'done': `,
+      //   (answer) => {
+      //     if (answer !== 'done') {
+      //       console.log('Deployment aborted');
+      //       process.exit(1);
+      //     }
+      //     console.log(
+      //       `Copying ${`../${HAR_FILE_OUTPUT_PATH}`} to ./harmony dir`
+      //     );
+      //     if (!fs.existsSync(`../${HAR_FILE_OUTPUT_PATH}`)) {
+      //       console.log(`Couldn't find ${HAR_FILE_OUTPUT_PATH}.`);
+      //       process.exit(1);
+      //     }
+      //     fs.rmSync('./harmony', { recursive: true, force: true });
+      //     fs.mkdirSync('./harmony');
+      //     fs.renameSync(
+      //       `../${HAR_FILE_OUTPUT_PATH}`,
+      //       `./harmony/${MODULE_NAME}.har`
+      //     );
+
+      //     // const changelogForCurrentVersion = execSync(
+      //     //   `npm run -s gen:changelog`
+      //     // ).toString();
+      //     // updateChangelog(version, changelogForCurrentVersion);
+
+      //     execSync(`npm publish --dry-run`, { stdio: 'inherit' });
+
+      //     rl.question(
+      //       'Are changes good to be published and pushed to the upstream? (yes/no): ',
+      //       async (answer) => {
+      //         if (answer.toLowerCase() === 'yes') {
+      //           execSync(`npm publish`, { stdio: 'inherit' });
+      //           console.log('NPM Package was published successfully.');
+      //           execSync(
+      //             `git checkout -b release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`
+      //           );
+      //           execSync('git add -A');
+      //           execSync(
+      //             `git commit -m "release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}"`,
+      //             {
+      //               stdio: 'inherit',
+      //             }
+      //           );
+      //           execSync(`git push -u origin HEAD --no-verify`, {
+      //             stdio: 'inherit',
+      //           });
+
+      //           execSync(`git tag v${version}`);
+      //           execSync(`git push -u origin v${version} --no-verify`, {
+      //             stdio: 'inherit',
+      //           });
+      //           const merge_Request_html_url = await createMergeRequest(
+      //             `release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`,
+      //             `release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}`
+      //           );
+      //           console.log(`Please merge the following Merge Request:\n${merge_Request_html_url}`);
+      //           rl.close();
+      //         } else {
+      //           console.log('Deployment aborted.');
+      //           rl.close();
+      //         }
+      //       }
+      //     );
+      //   }
+      // );
+
+      
       rl.question(
-        `Please generate ${HAR_FILE_OUTPUT_PATH} file. Open DevEco Studio, select any file in '${MODULE_NAME}' module, and run Build > Make Module '${MODULE_NAME}'.\nOnce you finish type 'done': `,
-        (answer) => {
-          if (answer !== 'done') {
+        `1. Please updating verison in your xxxTester/harmony/${MODULE_NAME}/oh-package.json5 by yourself\n`+
+        `2. Please generating ${HAR_FILE_OUTPUT_PATH} file. Open DevEco Studio, select any file in '${MODULE_NAME}' module, and run Build > Make Module '${MODULE_NAME}'.\n`+
+        `3. Please copying ${`${HAR_FILE_OUTPUT_PATH}`} to ./harmony dir\n`+
+        `Once you finish type 'done': `,
+        async (copyAnswer) => {
+          if (copyAnswer !== 'done' ||!fs.existsSync(`./harmony/${MODULE_NAME}.har`)) {
             console.log('Deployment aborted');
             process.exit(1);
           }
-          console.log(
-            `Copying ${`../${HAR_FILE_OUTPUT_PATH}`} to ./harmony dir`
-          );
-          if (!fs.existsSync(`../${HAR_FILE_OUTPUT_PATH}`)) {
-            console.log(`Couldn't find ${HAR_FILE_OUTPUT_PATH}.`);
-            process.exit(1);
-          }
-          fs.rmSync('./harmony', { recursive: true, force: true });
-          fs.mkdirSync('./harmony');
-          fs.renameSync(
-            `../${HAR_FILE_OUTPUT_PATH}`,
-            `./harmony/${MODULE_NAME}.har`
-          );
-
-          // const changelogForCurrentVersion = execSync(
-          //   `npm run -s gen:changelog`
-          // ).toString();
-          // updateChangelog(version, changelogForCurrentVersion);
-
+          
           execSync(`npm publish --dry-run`, { stdio: 'inherit' });
 
           rl.question(
@@ -106,11 +160,12 @@ function runDeployment() {
                 execSync(`git push -u origin v${version} --no-verify`, {
                   stdio: 'inherit',
                 });
-                const merge_Request_html_url = await createMergeRequest(
-                  `release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`,
-                  `release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}`
-                );
-                console.log(`Please merge the following Merge Request:\n${merge_Request_html_url}`);
+                
+                
+                execSync(`node ./scripts/create-pull-request.js`, {
+                  stdio: 'inherit',
+                });
+
                 rl.close();
               } else {
                 console.log('Deployment aborted.');
@@ -118,6 +173,7 @@ function runDeployment() {
               }
             }
           );
+          rl.close();    
         }
       );
     }
