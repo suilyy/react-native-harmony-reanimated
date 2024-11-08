@@ -134,7 +134,7 @@ function runDeployment() {
             process.exit(1);
           }
           
-          execSync(`npm publish --dry-run`, { stdio: 'inherit' });
+          // execSync(`npm publish --dry-run`, { stdio: 'inherit' });
 
           rl.question(
             'Are changes good to be published and pushed to the upstream? (yes/no): ',
