@@ -23,16 +23,31 @@ const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
     version = await askUserForVersion(currentVersion);
   }
 
+  // updatePackageVersion('.', version);
+  // console.log(`Updated ${PACKAGE_DIR_NAME}/package.json`);
+  // updatePackageScript('../tester', version);
+  // console.log('Updated tester/package.json');
+  // updateOHPackageVersion(
+  //   `../tester/harmony/${MODULE_NAME}/oh-package.json5`,
+  //   version
+  // );
+  // console.log(`Updated ${MODULE_NAME}/oh-package.json5`);
+  // execSync('npm i && cd ../tester', { stdio: 'inherit' });
+
+
+
   updatePackageVersion('.', version);
   console.log(`Updated ${PACKAGE_DIR_NAME}/package.json`);
-  updatePackageScript('../tester', version);
-  console.log('Updated tester/package.json');
-  updateOHPackageVersion(
-    `../tester/harmony/${MODULE_NAME}/oh-package.json5`,
-    version
-  );
-  console.log(`Updated ${MODULE_NAME}/oh-package.json5`);
-  execSync('npm i && cd ../tester', { stdio: 'inherit' });
+  
+  if(fs.existsSync(`${process.cwd().replace(/\\/g,'/')}/harmony/${MODULE_NAME}/oh-package.json5`)){
+
+    updateOHPackageVersion(
+      `${process.cwd()}/harmony/${MODULE_NAME}/oh-package.json5`,
+      version
+    );
+    
+  }
+
 })();
 
 /**
