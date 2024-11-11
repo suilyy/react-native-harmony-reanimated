@@ -2,7 +2,6 @@
 const { execSync } = require('child_process');
 const fs = require('node:fs');
 const readline = require('readline');
-const fetch = require('node-fetch');
 const config  = require("./config.js")
 
 // const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '';
@@ -12,14 +11,11 @@ const config  = require("./config.js")
 //   process.exit(1);
 // }
 
-const EXPECTED_EXECUTION_DIRECTORY_NAME =
-  'react-native-harmony-reanimated';
-const GITHUB_URL = 'https://api.github.com';
-// const OWNER = 'react-native-oh-library';
-const OWNER = 'suilyy';
-const MODULE_NAME = 'reanimated';
+
+const {EXPECTED_EXECUTION_DIRECTORY_NAME,MODULE_NAME} = config
+
 const HAR_FILE_OUTPUT_PATH = `tester/harmony/${MODULE_NAME}/build/default/outputs/default/${MODULE_NAME}.har`;
-const UNSCOPED_NPM_PACKAGE_NAME = 'react-native-harmony-reanimated';
+// const UNSCOPED_NPM_PACKAGE_NAME = 'react-native-harmony-reanimated';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -34,12 +30,12 @@ function runDeployment() {
     process.exit(1);
   }
 
-  // if (!isRepositoryClean()) {
-  //   console.log(
-  //     'Repository should be clean, on sig branch and up to date with upstream.'
-  //   );
-  //   process.exit(1);
-  // }
+  if (!isRepositoryClean()) {
+    console.log(
+      'Repository should be clean, on sig branch and up to date with upstream.'
+    );
+    process.exit(1);
+  }
 
   let version = '';
 
@@ -143,11 +139,11 @@ function runDeployment() {
                 execSync(`npm publish`, { stdio: 'inherit' });
                 console.log('NPM Package was published successfully.');
                 execSync(
-                  `git checkout -b release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`
+                  `git checkout -b release-${EXPECTED_EXECUTION_DIRECTORY_NAME}-${version}`
                 );
                 execSync('git add -A');
                 execSync(
-                  `git commit -m "release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}"`,
+                  `git commit -m "release: ${EXPECTED_EXECUTION_DIRECTORY_NAME}@${version}"`,
                   {
                     stdio: 'inherit',
                   }
@@ -196,53 +192,5 @@ function isRepositoryClean() {
   return !status && branch === 'sig' && isUpdated;
 }
 
-/**
- * @param {string} version
- *  @param {string} changelogForCurrentVersion
- */
-function updateChangelog(version, changelogForCurrentVersion) {
-  let data = fs.readFileSync('../CHANGELOG.md').toString();
-  data = data.replace(
-    '# Changelog',
-    `# Changelog\n\n## v${version}\n ${changelogForCurrentVersion}`
-  );
-  fs.writeFileSync('../CHANGELOG.md', data);
-}
-
-/**
- * @param {string} sourceBranch
- * @param {string} title
- * @returns {Promise<number>}
- */
-async function createMergeRequest(sourceBranch, title) {
-  try {
-    const response = await fetch(
-      `${GITHUB_URL}/repos/${OWNER}/${UNSCOPED_NPM_PACKAGE_NAME}/pulls`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `token ${RNOH_REPO_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: title,
-          'head': `${sourceBranch}`, // fork仓库分支
-          'base': `sig` // 源仓库分支
-        }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error(
-        `Failed to create merge request: ${response.statusText} ${response.status}`
-      );
-    }
-    const responseData = await response.json();
-    // console.log(JSON.stringify(responseData))
-    return responseData.html_url;
-  } catch (error) {
-    console.error('Error creating merge request:', error);
-    throw error;
-  }
-}
 
 runDeployment();

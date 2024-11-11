@@ -4,11 +4,13 @@ const path = require('path');
 const readline = require('readline');
 const { execSync } = require('node:child_process');
 const JSON5 = require('json5');
+const config  = require("./config.js")
 
-const PACKAGE_DIR_NAME = 'react-native-harmony-reanimated';
-const MODULE_NAME = 'reanimated';
-const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
-  'rnoh-react-native-harmony-reanimated';
+
+const {EXPECTED_EXECUTION_DIRECTORY_NAME,MODULE_NAME} = config
+
+const PACKAGE_DIR_NAME = EXPECTED_EXECUTION_DIRECTORY_NAME;
+// const MODULE_NAME = 'reanimated';
 
 (async function main() {
   const newVersionIndex = process.argv.findIndex(
@@ -104,6 +106,8 @@ function updatePackageVersion(packageDir, version) {
  */
 function updatePackageScript(packageDir, version) {
   const packageData = readPackage(packageDir);
+  const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
+    'rnoh-react-native-harmony-reanimated';
 
   for (let script in packageData.scripts) {
     const regex = new RegExp(
