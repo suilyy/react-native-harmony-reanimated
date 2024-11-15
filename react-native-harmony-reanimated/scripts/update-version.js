@@ -4,11 +4,13 @@ const path = require('path');
 const readline = require('readline');
 const { execSync } = require('node:child_process');
 const JSON5 = require('json5');
+const config  = require("./config.js")
 
-const PACKAGE_DIR_NAME = 'react-native-harmony-reanimated';
-const MODULE_NAME = 'reanimated';
-const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
-  'rnoh-react-native-harmony-reanimated';
+
+const {EXPECTED_EXECUTION_DIRECTORY_NAME,MODULE_NAME} = config
+
+const PACKAGE_DIR_NAME = EXPECTED_EXECUTION_DIRECTORY_NAME;
+// const MODULE_NAME = 'reanimated';
 
 (async function main() {
   const newVersionIndex = process.argv.findIndex(
@@ -23,16 +25,32 @@ const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
     version = await askUserForVersion(currentVersion);
   }
 
+  // updatePackageVersion('.', version);
+  // console.log(`Updated ${PACKAGE_DIR_NAME}/package.json`);
+  // updatePackageScript('../tester', version);
+  // console.log('Updated tester/package.json');
+  // updateOHPackageVersion(
+  //   `../tester/harmony/${MODULE_NAME}/oh-package.json5`,
+  //   version
+  // );
+  // console.log(`Updated ${MODULE_NAME}/oh-package.json5`);
+  // execSync('npm i && cd ../tester', { stdio: 'inherit' });
+
+
+
   updatePackageVersion('.', version);
   console.log(`Updated ${PACKAGE_DIR_NAME}/package.json`);
-  updatePackageScript('../tester', version);
-  console.log('Updated tester/package.json');
-  updateOHPackageVersion(
-    `../tester/harmony/${MODULE_NAME}/oh-package.json5`,
-    version
-  );
-  console.log(`Updated ${MODULE_NAME}/oh-package.json5`);
-  execSync('npm i && cd ../tester', { stdio: 'inherit' });
+  
+  if(fs.existsSync(`${process.cwd().replace(/\\/g,'/')}/harmony/${MODULE_NAME}/oh-package.json5`)){
+
+    updateOHPackageVersion(
+      `${process.cwd()}/harmony/${MODULE_NAME}/oh-package.json5`,
+      version
+    );
+    console.log(`${process.cwd()}/harmony/${MODULE_NAME}/oh-package.json5`);
+    
+  }
+
 })();
 
 /**
@@ -88,6 +106,8 @@ function updatePackageVersion(packageDir, version) {
  */
 function updatePackageScript(packageDir, version) {
   const packageData = readPackage(packageDir);
+  const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
+    'rnoh-react-native-harmony-reanimated';
 
   for (let script in packageData.scripts) {
     const regex = new RegExp(

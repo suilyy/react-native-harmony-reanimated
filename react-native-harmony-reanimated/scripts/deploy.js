@@ -2,23 +2,20 @@
 const { execSync } = require('child_process');
 const fs = require('node:fs');
 const readline = require('readline');
-const fetch = require('node-fetch');
+const config  = require("./config.js")
 
-const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '';
+// const RNOH_REPO_TOKEN = process.env.RNOH_REPO_TOKEN ?? '';
 
-if (!RNOH_REPO_TOKEN) {
-  console.log('RNOH_REPO_TOKEN not found');
-  process.exit(1);
-}
+// if (!RNOH_REPO_TOKEN) {
+//   console.log('RNOH_REPO_TOKEN not found');
+//   process.exit(1);
+// }
 
-const EXPECTED_EXECUTION_DIRECTORY_NAME =
-  'react-native-harmony-reanimated';
-const GITHUB_URL = 'https://api.github.com';
-// const OWNER = 'react-native-oh-library';
-const OWNER = 'suilyy';
-const MODULE_NAME = 'reanimated';
+
+const {EXPECTED_EXECUTION_DIRECTORY_NAME,MODULE_NAME} = config
+
 const HAR_FILE_OUTPUT_PATH = `tester/harmony/${MODULE_NAME}/build/default/outputs/default/${MODULE_NAME}.har`;
-const UNSCOPED_NPM_PACKAGE_NAME = 'react-native-harmony-reanimated';
+// const UNSCOPED_NPM_PACKAGE_NAME = 'react-native-harmony-reanimated';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -54,46 +51,99 @@ function runDeployment() {
         stdio: 'inherit',
       });
 
+      // rl.question(
+      //   `Please generate ${HAR_FILE_OUTPUT_PATH} file. Open DevEco Studio, select any file in '${MODULE_NAME}' module, and run Build > Make Module '${MODULE_NAME}'.\nOnce you finish type 'done': `,
+      //   (answer) => {
+      //     if (answer !== 'done') {
+      //       console.log('Deployment aborted');
+      //       process.exit(1);
+      //     }
+      //     console.log(
+      //       `Copying ${`../${HAR_FILE_OUTPUT_PATH}`} to ./harmony dir`
+      //     );
+      //     if (!fs.existsSync(`../${HAR_FILE_OUTPUT_PATH}`)) {
+      //       console.log(`Couldn't find ${HAR_FILE_OUTPUT_PATH}.`);
+      //       process.exit(1);
+      //     }
+      //     fs.rmSync('./harmony', { recursive: true, force: true });
+      //     fs.mkdirSync('./harmony');
+      //     fs.renameSync(
+      //       `../${HAR_FILE_OUTPUT_PATH}`,
+      //       `./harmony/${MODULE_NAME}.har`
+      //     );
+
+      //     // const changelogForCurrentVersion = execSync(
+      //     //   `npm run -s gen:changelog`
+      //     // ).toString();
+      //     // updateChangelog(version, changelogForCurrentVersion);
+
+      //     execSync(`npm publish --dry-run`, { stdio: 'inherit' });
+
+      //     rl.question(
+      //       'Are changes good to be published and pushed to the upstream? (yes/no): ',
+      //       async (answer) => {
+      //         if (answer.toLowerCase() === 'yes') {
+      //           execSync(`npm publish`, { stdio: 'inherit' });
+      //           console.log('NPM Package was published successfully.');
+      //           execSync(
+      //             `git checkout -b release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`
+      //           );
+      //           execSync('git add -A');
+      //           execSync(
+      //             `git commit -m "release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}"`,
+      //             {
+      //               stdio: 'inherit',
+      //             }
+      //           );
+      //           execSync(`git push -u origin HEAD --no-verify`, {
+      //             stdio: 'inherit',
+      //           });
+
+      //           execSync(`git tag v${version}`);
+      //           execSync(`git push -u origin v${version} --no-verify`, {
+      //             stdio: 'inherit',
+      //           });
+      //           const merge_Request_html_url = await createMergeRequest(
+      //             `release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`,
+      //             `release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}`
+      //           );
+      //           console.log(`Please merge the following Merge Request:\n${merge_Request_html_url}`);
+      //           rl.close();
+      //         } else {
+      //           console.log('Deployment aborted.');
+      //           rl.close();
+      //         }
+      //       }
+      //     );
+      //   }
+      // );
+
+      
       rl.question(
-        `Please generate ${HAR_FILE_OUTPUT_PATH} file. Open DevEco Studio, select any file in '${MODULE_NAME}' module, and run Build > Make Module '${MODULE_NAME}'.\nOnce you finish type 'done': `,
-        (answer) => {
-          if (answer !== 'done') {
+        `1. Please updating verison in your xxxTester/harmony/${MODULE_NAME}/oh-package.json5 by yourself\n`+
+        `2. Please generating ${HAR_FILE_OUTPUT_PATH} file. Open DevEco Studio, select any file in '${MODULE_NAME}' module, and run Build > Make Module '${MODULE_NAME}'.\n`+
+        `3. Please copying ${`${HAR_FILE_OUTPUT_PATH}`} to ./harmony dir\n`+
+        `Once you finish type 'done': `,
+        (copyAnswer) => {
+          if (copyAnswer !== 'done' ||!fs.existsSync(`./harmony/${MODULE_NAME}.har`)) {
             console.log('Deployment aborted');
             process.exit(1);
           }
-          console.log(
-            `Copying ${`../${HAR_FILE_OUTPUT_PATH}`} to ./harmony dir`
-          );
-          if (!fs.existsSync(`../${HAR_FILE_OUTPUT_PATH}`)) {
-            console.log(`Couldn't find ${HAR_FILE_OUTPUT_PATH}.`);
-            process.exit(1);
-          }
-          fs.rmSync('./harmony', { recursive: true, force: true });
-          fs.mkdirSync('./harmony');
-          fs.renameSync(
-            `../${HAR_FILE_OUTPUT_PATH}`,
-            `./harmony/${MODULE_NAME}.har`
-          );
-
-          // const changelogForCurrentVersion = execSync(
-          //   `npm run -s gen:changelog`
-          // ).toString();
-          // updateChangelog(version, changelogForCurrentVersion);
-
+          
           execSync(`npm publish --dry-run`, { stdio: 'inherit' });
 
           rl.question(
             'Are changes good to be published and pushed to the upstream? (yes/no): ',
-            async (answer) => {
+            (answer) => {
               if (answer.toLowerCase() === 'yes') {
                 execSync(`npm publish`, { stdio: 'inherit' });
                 console.log('NPM Package was published successfully.');
                 execSync(
-                  `git checkout -b release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`
+                  `git checkout -b release-${EXPECTED_EXECUTION_DIRECTORY_NAME}-${version}`
                 );
                 execSync('git add -A');
                 execSync(
-                  `git commit -m "release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}"`,
+                  `git commit -m "release: ${EXPECTED_EXECUTION_DIRECTORY_NAME}@${version}"`,
                   {
                     stdio: 'inherit',
                   }
@@ -106,18 +156,19 @@ function runDeployment() {
                 execSync(`git push -u origin v${version} --no-verify`, {
                   stdio: 'inherit',
                 });
-                const merge_Request_html_url = await createMergeRequest(
-                  `release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`,
-                  `release: ${UNSCOPED_NPM_PACKAGE_NAME}@${version}`
-                );
-                console.log(`Please merge the following Merge Request:\n${merge_Request_html_url}`);
+                
+                
+                execSync(`node ./scripts/create-pull-request.js`, {
+                  stdio: 'inherit',
+                });
+
                 rl.close();
               } else {
                 console.log('Deployment aborted.');
                 rl.close();
               }
             }
-          );
+          ); 
         }
       );
     }
@@ -141,53 +192,5 @@ function isRepositoryClean() {
   return !status && branch === 'sig' && isUpdated;
 }
 
-/**
- * @param {string} version
- *  @param {string} changelogForCurrentVersion
- */
-function updateChangelog(version, changelogForCurrentVersion) {
-  let data = fs.readFileSync('../CHANGELOG.md').toString();
-  data = data.replace(
-    '# Changelog',
-    `# Changelog\n\n## v${version}\n ${changelogForCurrentVersion}`
-  );
-  fs.writeFileSync('../CHANGELOG.md', data);
-}
-
-/**
- * @param {string} sourceBranch
- * @param {string} title
- * @returns {Promise<number>}
- */
-async function createMergeRequest(sourceBranch, title) {
-  try {
-    const response = await fetch(
-      `${GITHUB_URL}/repos/${OWNER}/${UNSCOPED_NPM_PACKAGE_NAME}/pulls`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `token ${RNOH_REPO_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: title,
-          'head': `${sourceBranch}`, // fork仓库分支
-          'base': `sig` // 源仓库分支
-        }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error(
-        `Failed to create merge request: ${response.statusText} ${response.status}`
-      );
-    }
-    const responseData = await response.json();
-    console.log(JSON.stringify(responseData))
-    return responseData.html_url;
-  } catch (error) {
-    console.error('Error creating merge request:', error);
-    throw error;
-  }
-}
 
 runDeployment();
