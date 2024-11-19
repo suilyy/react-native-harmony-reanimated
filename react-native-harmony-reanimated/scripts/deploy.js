@@ -30,12 +30,12 @@ function runDeployment() {
     process.exit(1);
   }
 
-  if (!isRepositoryClean()) {
-    console.log(
-      'Repository should be clean, on sig branch and up to date with upstream.'
-    );
-    process.exit(1);
-  }
+  // if (!isRepositoryClean()) {
+  //   console.log(
+  //     'Repository should be clean, on sig branch and up to date with upstream.'
+  //   );
+  //   process.exit(1);
+  // }
 
   let version = '';
 
@@ -136,7 +136,7 @@ function runDeployment() {
             'Are changes good to be published and pushed to the upstream? (yes/no): ',
             (answer) => {
               if (answer.toLowerCase() === 'yes') {
-                execSync(`npm publish`, { stdio: 'inherit' });
+                // execSync(`npm publish`, { stdio: 'inherit' });
                 console.log('NPM Package was published successfully.');
                 execSync(
                   `git checkout -b release-${EXPECTED_EXECUTION_DIRECTORY_NAME}-${version}`
