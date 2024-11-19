@@ -74,13 +74,11 @@ async function createGitHubMergeRequest(sourceBranch, title) {
         body: JSON.stringify({
           title: title,
           'head': `${sourceBranch}`, // 当前分支
-          'base': `master` // 目标分支
+          'base': `sig` // 目标分支
         }),
       }
     );
     if (!response.ok) {
-      const responseData = await response.json();
-      console.log(JSON.stringify(responseData))
       throw new Error(
         `Failed to create merge request: ${response.statusText} ${response.status}`
       );
