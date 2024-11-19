@@ -1,13 +1,17 @@
 #include "RNOH/PackageProvider.h"
-#include "ReanimatedPackage.h"
-#include "GestureHandlerPackage.h"
-#include "generated/RNOHGeneratedPackage.h"
-#include "SafeAreaViewPackage.h"
+// #include "ReanimatedPackage.h"
+// #include "GestureHandlerPackage.h"
+// #include "generated/RNOHGeneratedPackage.h"
+// #include "SafeAreaViewPackage.h"
+#include "BackgroundTimerPackage.h"
 
 
 using namespace rnoh;
 
 std::vector<std::shared_ptr<Package>> PackageProvider::getPackages(Package::Context ctx) {
-  return {std::make_shared<RNOHGeneratedPackage>(ctx), std::make_shared<ReanimatedPackage>(ctx),
-          std::make_shared<GestureHandlerPackage>(ctx), std::make_shared<SafeAreaViewPackage>(ctx)};
+  return {
+//         std::make_shared<RNOHGeneratedPackage>(ctx), std::make_shared<ReanimatedPackage>(ctx),
+//           std::make_shared<GestureHandlerPackage>(ctx), std::make_shared<SafeAreaViewPackage>(ctx)
+        std::make_shared<BackgroundTimerPackage>(ctx)
+    };
 }
