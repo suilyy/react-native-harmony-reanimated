@@ -23,19 +23,17 @@ const rl = readline.createInterface({
 async function createPullRequest() {
   
   const merge_Request_html_url = await createMergeRequest(
-    `release-${MODULE_NAME}-${packageJson['version']}`,
-    `release: ${MODULE_NAME}@${packageJson['version']}`
+    `release-${EXPECTED_EXECUTION_DIRECTORY_NAME}-${packageJson['version']}`,
+    `release: ${EXPECTED_EXECUTION_DIRECTORY_NAME}@${packageJson['version']}`
   );
   console.log(`Please merge the following Merge Request:\n${merge_Request_html_url}`);
   
   rl.question(
     'is the following Merge Request merged? (yes/no): ',
-    (answer) => {
+    async (answer) => {
       if (answer.toLowerCase() === 'yes') {
         // execSync(`npm publish`, { stdio: 'inherit' });
-        await createReleaseRequest(
-          packageJson['version']
-        );
+        const release_Request_html_url = await createReleaseRequest();
 
         rl.close();
       } else {
@@ -59,7 +57,7 @@ async function createPullRequest() {
 async function createGitHubMergeRequest(sourceBranch, title) {
   try {
     const RNOH_REPO_TOKEN = process.env.GITHUB_TOKEN ?? '';
-    console.log('createGitHubMergeRequest')
+    console.log('createGitHubMergeRequest', sourceBranch)
 
     if (!RNOH_REPO_TOKEN) {
     console.log('RNOH_REPO_TOKEN not found');
@@ -75,12 +73,14 @@ async function createGitHubMergeRequest(sourceBranch, title) {
         },
         body: JSON.stringify({
           title: title,
-          'head': `${sourceBranch}`, // fork仓库分支
-          'base': `master` // 源仓库分支
+          'head': `${sourceBranch}`, // 当前分支
+          'base': `master` // 目标分支
         }),
       }
     );
     if (!response.ok) {
+      const responseData = await response.json();
+      console.log(JSON.stringify(responseData))
       throw new Error(
         `Failed to create merge request: ${response.statusText} ${response.status}`
       );
@@ -150,21 +150,17 @@ function createMergeRequest(sourceBranch, title) {
           remoteUrl.indexOf('github')>-1?createGiteeMergeRequest(sourceBranch, title):''  
 }
 /**
- * @param {string} sourceBranch
- * @param {string} title
  */
-function createReleaseRequest(sourceBranch, title) {
+function createReleaseRequest() {
   let remoteUrl = getGitRemoteUrl()
-  return remoteUrl?.indexOf('github')>-1?createGitHubReleaseRequest(sourceBranch, title):
-          remoteUrl.indexOf('github')>-1?createGitHubReleaseRequest(sourceBranch, title):''  
+  return remoteUrl?.indexOf('github')>-1?createGitHubReleaseRequest():
+          remoteUrl.indexOf('github')>-1?createGitHubReleaseRequest():''  
 }
 
 /**
- * @param {string} sourceBranch
- * @param {string} title
  * @returns {Promise<number>}
  */
-async function createGitHubReleaseRequest(sourceBranch, title) {
+async function createGitHubReleaseRequest() {
   try {
     const RNOH_REPO_TOKEN = process.env.GITHUB_TOKEN ?? '';
     console.log('createGitHubReleaseRequest')
