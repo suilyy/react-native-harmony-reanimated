@@ -152,10 +152,10 @@ function runDeployment() {
                   stdio: 'inherit',
                 });
 
-                execSync(`git tag v${version}`);
-                execSync(`git push -u origin v${version} --no-verify`, {
-                  stdio: 'inherit',
-                });
+                // execSync(`git tag v${version}`);
+                // execSync(`git push -u origin v${version} --no-verify`, {
+                //   stdio: 'inherit',
+                // });
                 
                 
                 execSync(`node ./scripts/create-pull-request.js`, {

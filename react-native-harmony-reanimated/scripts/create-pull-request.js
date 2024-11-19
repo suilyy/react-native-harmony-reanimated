@@ -22,30 +22,35 @@ const rl = readline.createInterface({
 
 async function createPullRequest() {
   
-  const merge_Request_html_url = await createMergeRequest(
-    `release-${EXPECTED_EXECUTION_DIRECTORY_NAME}-${packageJson['version']}`,
-    `release: ${EXPECTED_EXECUTION_DIRECTORY_NAME}@${packageJson['version']}`
-  );
-  console.log(`Please merge the following Merge Request:\n${merge_Request_html_url}`);
-  
-  rl.question(
-    'is the following Merge Request merged? (yes/no): ',
-    async (answer) => {
-      if (answer.toLowerCase() === 'yes') {
-        // execSync(`npm publish`, { stdio: 'inherit' });
-        const release_Request_html_url = await createReleaseRequest();
+  const release_Request_html_url = await createReleaseRequest();
+  console.log(`Please create the following release Request:\n${release_Request_html_url}`);
 
-        rl.close();
-      } else {
-        console.log('Deployment aborted.');
-        rl.close();
-      }
-    }
-  ); 
+  // const merge_Request_html_url = await createMergeRequest(
+  //   `release-${EXPECTED_EXECUTION_DIRECTORY_NAME}-${packageJson['version']}`,
+  //   `release: ${EXPECTED_EXECUTION_DIRECTORY_NAME}@${packageJson['version']}`
+  // );
+  // console.log(`Please merge the following Merge Request:\n${merge_Request_html_url}`);
+  
+  // rl.question(
+  //   'is the following Merge Request merged? (yes/no): ',
+  //   async (answer) => {
+  //     if (answer.toLowerCase() === 'yes') {
+  //       // execSync(`npm publish`, { stdio: 'inherit' });
+  //       const release_Request_html_url = await createReleaseRequest();
+
+  //       rl.close();
+  //     } else {
+  //       console.log('Deployment aborted.');
+  //       rl.close();
+  //     }
+  //   }
+  // ); 
+
+
   // getGitRemoteUrl().indexOf('github')?
   // const sss = ` https://gitee.com/wangyue6/npmtest_rnmarquee/releases/tag/v0.6.13`
   // console.log(`Please send the following Tag Request:\n${merge_Request_html_url}`);
-  rl.close();      
+  // rl.close();      
 }
 
 
