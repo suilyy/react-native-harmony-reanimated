@@ -6,7 +6,8 @@ export default class EntryAbility extends RNAbility {
   }
 
   getRNOHWorkerScriptUrl() {
-    return "entry/ets/workers/RNOHWorker.ets"
+    return ""
+    // return "entry/ets/workers/RNOHWorker.ets"
   }
 
 };

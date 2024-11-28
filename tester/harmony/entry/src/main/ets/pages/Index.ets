@@ -69,6 +69,7 @@ struct Index {
 
   build() {
     Column() {
+      Text("afsdfsgf")
       if (this.rnohCoreContext && this.shouldShow) {
         if (this.rnohCoreContext?.isDebugModeEnabled) {
           RNOHErrorDialog({ ctx: this.rnohCoreContext })

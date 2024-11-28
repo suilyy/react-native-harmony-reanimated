@@ -27,13 +27,14 @@ async function createPullRequest() {
     `release: ${EXPECTED_EXECUTION_DIRECTORY_NAME}@${packageJson['version']}`
   );
   console.log(`Please merge the following Merge Request:\n${merge_Request_html_url}`);
-  
+   
   rl.question(
     'is the following Merge Request merged? (yes/no): ',
     async (answer) => {
       if (answer.toLowerCase() === 'yes') {
         // execSync(`npm publish`, { stdio: 'inherit' });
         const release_Request_html_url = await createReleaseRequest();
+        console.log(`Please create the following release Request:\n${release_Request_html_url}`);
 
         rl.close();
       } else {
@@ -42,10 +43,12 @@ async function createPullRequest() {
       }
     }
   ); 
+
+
   // getGitRemoteUrl().indexOf('github')?
   // const sss = ` https://gitee.com/wangyue6/npmtest_rnmarquee/releases/tag/v0.6.13`
   // console.log(`Please send the following Tag Request:\n${merge_Request_html_url}`);
-  rl.close();      
+  // rl.close();      
 }
 
 
@@ -145,14 +148,14 @@ function getGitRemoteUrl() {
 function createMergeRequest(sourceBranch, title) {
   let remoteUrl = getGitRemoteUrl()
   return remoteUrl?.indexOf('github')>-1?createGitHubMergeRequest(sourceBranch, title):
-          remoteUrl.indexOf('github')>-1?createGiteeMergeRequest(sourceBranch, title):''  
+          remoteUrl.indexOf('gitee')>-1?createGiteeMergeRequest(sourceBranch, title):''  
 }
 /**
  */
 function createReleaseRequest() {
   let remoteUrl = getGitRemoteUrl()
   return remoteUrl?.indexOf('github')>-1?createGitHubReleaseRequest():
-          remoteUrl.indexOf('github')>-1?createGitHubReleaseRequest():''  
+          remoteUrl.indexOf('gitee')>-1?createGiteeReleaseRequest():''  
 }
 
 /**
@@ -177,7 +180,6 @@ async function createGitHubReleaseRequest() {
         },
         body: JSON.stringify({
           "tag_name": `v${packageJson['version']}`,
-          "target_commitish": "master",
           "name": `v${packageJson['version']}`,
           "body": "This is the body of the release",
           "draft": false,
@@ -186,6 +188,52 @@ async function createGitHubReleaseRequest() {
       }
     );
     if (!response.ok) {
+      const responseData = await response.json();
+      console.log(JSON.stringify(responseData))
+      throw new Error(
+        `Failed to create release request: ${response.statusText} ${response.status}`
+      );
+    }
+    const responseData = await response.json();
+    console.log(JSON.stringify(responseData))
+    return responseData.html_url;
+  } catch (error) {
+    console.error('Error creating release request:', error);
+    throw error;
+  }
+}
+/**
+ * @returns {Promise<number>}
+ */
+async function createGiteeReleaseRequest() {
+  try {
+    const RNOH_REPO_TOKEN = process.env.GITEE_TOKEN ?? '';
+    console.log('createGiteeReleaseRequest')
+
+    if (!RNOH_REPO_TOKEN) {
+    console.log('RNOH_REPO_TOKEN not found');
+    process.exit(1);
+    }
+    const response = await fetch(
+      `${GITEE_URL}/repos/${OWNER}/${EXPECTED_EXECUTION_DIRECTORY_NAME}/releases`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `token ${RNOH_REPO_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "tag_name": `v${packageJson['version']}`,
+          "name": `v${packageJson['version']}`,
+          "body": "This is the body of the release",
+          "draft": false,
+          "prerelease": false
+        }),
+      }
+    );
+    if (!response.ok) {
+      const responseData = await response.json();
+      console.log(JSON.stringify(responseData))
       throw new Error(
         `Failed to create release request: ${response.statusText} ${response.status}`
       );
