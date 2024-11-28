@@ -87,7 +87,7 @@ async function createGitHubMergeRequest(sourceBranch, title) {
       );
     }
     const responseData = await response.json();
-    console.log(JSON.stringify(responseData))
+    // console.log(JSON.stringify(responseData))
     return responseData.html_url;
   } catch (error) {
     console.error('Error creating merge request:', error);
@@ -123,7 +123,7 @@ async function createGiteeMergeRequest(sourceBranch, title) {
       }
     );
     const responseData = await response.json();
-    console.log(JSON.stringify(responseData))
+    // console.log(JSON.stringify(responseData))
     return responseData.html_url;
   } catch (error) {
     console.error('Error creating merge request:', error);
@@ -189,13 +189,13 @@ async function createGitHubReleaseRequest() {
     );
     if (!response.ok) {
       const responseData = await response.json();
-      console.log(JSON.stringify(responseData))
+      // console.log(JSON.stringify(responseData))
       throw new Error(
         `Failed to create release request: ${response.statusText} ${response.status}`
       );
     }
     const responseData = await response.json();
-    console.log(JSON.stringify(responseData))
+    // console.log(JSON.stringify(responseData))
     return responseData.html_url;
   } catch (error) {
     console.error('Error creating release request:', error);
@@ -233,13 +233,13 @@ async function createGiteeReleaseRequest() {
     );
     if (!response.ok) {
       const responseData = await response.json();
-      console.log(JSON.stringify(responseData))
+      // console.log(JSON.stringify(responseData))
       throw new Error(
         `Failed to create release request: ${response.statusText} ${response.status}`
       );
     }
     const responseData = await response.json();
-    console.log(JSON.stringify(responseData))
+    // console.log(JSON.stringify(responseData))
     return responseData.html_url;
   } catch (error) {
     console.error('Error creating release request:', error);
