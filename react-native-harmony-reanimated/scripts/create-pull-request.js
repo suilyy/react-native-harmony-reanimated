@@ -233,13 +233,13 @@ async function createGiteeReleaseRequest() {
     );
     if (!response.ok) {
       const responseData = await response.json();
-      console.log(JSON.stringify(responseData))
+      // console.log(JSON.stringify(responseData))
       throw new Error(
         `Failed to create release request: ${response.statusText} ${response.status}`
       );
     }
     const responseData = await response.json();
-    console.log(JSON.stringify(responseData))
+    // console.log(JSON.stringify(responseData))
     return responseData.html_url;
   } catch (error) {
     console.error('Error creating release request:', error);
