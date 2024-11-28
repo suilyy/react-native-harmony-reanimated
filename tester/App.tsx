@@ -162,35 +162,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <StatusBar />
-      <GestureHandlerRootView style={styles.container}>
-        <NavigationContainer linking={linking}>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{
-                headerTitle: '🐎 Reanimated examples',
-                title: 'Reanimated examples',
-                headerLeft: Platform.OS === 'web' ? () => null : undefined,
-              }}
-            />
-            {EXAMPLES_NAMES.map(name => (
-              <Stack.Screen
-                key={name}
-                name={name}
-                component={EXAMPLES[name].screen}
-                options={{
-                  animation: shouldReduceMotion ? 'fade' : 'default',
-                  headerTitle: EXAMPLES[name].title,
-                  title: EXAMPLES[name].title,
-                  headerLeft: Platform.OS === 'web' ? BackButton : undefined,
-                }}
-              />
-            ))}
-          </Stack.Navigator>
-        </NavigationContainer>
-      </GestureHandlerRootView>
+      <Text>111111</Text>
     </View>
   );
 }
