@@ -1,6 +1,6 @@
 {
   name: '@suilyy/react-native-reanimated',
-  version: '3.6.50',
+  version: '3.6.51',
   description: '',
   type: 'module',
   main: 'index.ets',
